@@ -20,6 +20,6 @@
 
 ## GitHub 與網站隱私
 
-原始碼已放在 [Private repository](https://github.com/qingqiang131-stack/nhip-hoc-study-tracker)。一般 GitHub Pages 網址仍可公開連線，即使它顯示登入畫面；這個版本會在登入前隱藏學習內容，並由 Supabase 規則保護筆記與照片。若要讓網站網址本身也只供已授權者連線，需使用 GitHub Enterprise Cloud 的私有 Pages，或使用有存取控制的託管服務。
+原始碼已公開在 [GitHub repository](https://github.com/qingqiang131-stack/nhip-hoc-study-tracker)，網站已發佈於 [GitHub Pages](https://qingqiang131-stack.github.io/nhip-hoc-study-tracker/)。任何人都可以開啟網站和檢視公開程式碼、課程表。
 
-尚未設定 Supabase 專案或正式網站網址，因此 `cloud-config.js` 仍保持 `enabled: false`；設定完成前不要公開部署。一般 GitHub Pages 網址即使來源 repository 是 Private，網站仍可能公開。若只使用 Private repository 而不公開部署，程式碼和課程表不會向公眾開放。本機與雲端資料使用不同的瀏覽器儲存空間。首次登入時，應用會將這台裝置原有的學習時段和筆記匯入雲端；之後新建的內容會在網路可用時同步。
+`cloud-config.js` 的 `enabled` 仍為 `false`，所以目前沒有私人登入或跨裝置同步。每台裝置的學習紀錄和照片各自保存在該裝置的瀏覽器。本機與雲端資料使用不同的瀏覽器儲存空間。若要同步資料，請先設定 Supabase；若要讓網站只供自己登入查看，請改用有存取控制的託管服務，例如 Cloudflare Access，而不要使用公開的 GitHub Pages 網址。
