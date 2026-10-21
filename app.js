@@ -61,6 +61,8 @@ const WEEKLY_SCHEDULE = [
 const DEFAULT_STATE = {
   subjects: DEFAULT_SUBJECTS,
   sessions: [],
+  calendarEvents: [],
+  deletedCalendarEventIds: [],
   weeklyGoalHours: 8,
   lastModified: "",
 };
@@ -70,11 +72,15 @@ function loadState() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
     if (!saved || typeof saved !== "object") return structuredClone(DEFAULT_STATE);
     const sessions = Array.isArray(saved.sessions) ? saved.sessions.filter(isValidSession) : [];
+    const calendarEvents = Array.isArray(saved.calendarEvents) ? saved.calendarEvents.filter(isValidCalendarEvent) : [];
+    const deletedCalendarEventIds = Array.isArray(saved.deletedCalendarEventIds) ? saved.deletedCalendarEventIds.filter((id) => typeof id === "string") : [];
     const oldDefaultInUse = sessions.some((session) => session.subject === "Tự học");
     const savedSubjects = Array.isArray(saved.subjects) ? saved.subjects.filter((subject) => typeof subject === "string" && subject.trim()) : [];
     return {
       subjects: [...new Set([...DEFAULT_SUBJECTS, ...savedSubjects.filter((subject) => subject !== "Tự học" || oldDefaultInUse)])],
       sessions,
+      calendarEvents,
+      deletedCalendarEventIds,
       weeklyGoalHours: clampNumber(saved.weeklyGoalHours, 1, 80, 8),
       lastModified: typeof saved.lastModified === "string" ? saved.lastModified : "",
     };
@@ -86,6 +92,13 @@ function loadState() {
 function isValidSession(session) {
   return session && typeof session.id === "string" && typeof session.subject === "string" &&
     typeof session.date === "string" && Number.isFinite(session.durationSec) && session.durationSec > 0;
+}
+
+function isValidCalendarEvent(event) {
+  return event && typeof event.id === "string" && typeof event.title === "string" && event.title.trim() &&
+    typeof event.start === "string" && /^\d{4}-\d{2}-\d{2}$/.test(event.start) &&
+    typeof event.end === "string" && /^\d{4}-\d{2}-\d{2}$/.test(event.end) && event.end >= event.start &&
+    typeof event.category === "string";
 }
 
 function clampNumber(value, min, max, fallback) {
@@ -103,6 +116,7 @@ const notesDbPromises = new Map();
 let noteImageUrls = [];
 let pendingNotePreviewUrl = null;
 let noteRenderToken = 0;
+let recentActivityRenderToken = 0;
 let cloudClient = null;
 let cloudUser = null;
 let cloudSyncReady = false;
@@ -261,6 +275,17 @@ function mergeStudyState(remoteState, importedState = null) {
     .filter((subject) => typeof subject === "string");
   state.subjects = [...new Set([...DEFAULT_SUBJECTS, ...remoteSubjects, ...state.subjects])];
   state.sessions = mergeSessions(mergeSessions(state.sessions, remote.sessions), imported.sessions);
+  const events = new Map();
+  const deletedEventIds = new Set([
+    ...(Array.isArray(remote.deletedCalendarEventIds) ? remote.deletedCalendarEventIds : []),
+    ...(Array.isArray(imported.deletedCalendarEventIds) ? imported.deletedCalendarEventIds : []),
+    ...state.deletedCalendarEventIds,
+  ].filter((id) => typeof id === "string"));
+  [...(Array.isArray(remote.calendarEvents) ? remote.calendarEvents : []), ...(Array.isArray(imported.calendarEvents) ? imported.calendarEvents : []), ...state.calendarEvents]
+    .filter(isValidCalendarEvent)
+    .forEach((event) => events.set(event.id, { ...events.get(event.id), ...event }));
+  state.deletedCalendarEventIds = [...deletedEventIds];
+  state.calendarEvents = [...events.values()].filter((event) => !deletedEventIds.has(event.id));
   state.weeklyGoalHours = clampNumber(preferred.weeklyGoalHours, 1, 80, 8);
   const latestTimestamp = Math.max(...candidates.map((candidate) => Date.parse(candidate.lastModified || "") || 0));
   state.lastModified = latestTimestamp ? new Date(latestTimestamp).toISOString() : "";
@@ -314,6 +339,8 @@ async function synchronizeCloud({ initial = false } = {}) {
             importedState = {
               subjects: [...new Set([...DEFAULT_SUBJECTS, ...legacySubjects.filter((subject) => subject !== "Tự học" || oldDefaultInUse)])],
               sessions,
+              calendarEvents: Array.isArray(legacy.calendarEvents) ? legacy.calendarEvents.filter(isValidCalendarEvent) : [],
+              deletedCalendarEventIds: Array.isArray(legacy.deletedCalendarEventIds) ? legacy.deletedCalendarEventIds.filter((id) => typeof id === "string") : [],
               weeklyGoalHours: clampNumber(legacy.weeklyGoalHours, 1, 80, 8),
               lastModified: typeof legacy.lastModified === "string" ? legacy.lastModified : "",
             };
@@ -345,6 +372,8 @@ async function synchronizeCloud({ initial = false } = {}) {
           state: {
             subjects: state.subjects,
             sessions: state.sessions,
+            calendarEvents: state.calendarEvents,
+            deletedCalendarEventIds: state.deletedCalendarEventIds,
             weeklyGoalHours: state.weeklyGoalHours,
             lastModified: state.lastModified,
           },
@@ -414,6 +443,8 @@ async function clearPrivateCache() {
   localStorage.removeItem(STORAGE_KEY);
   state.subjects = [...DEFAULT_SUBJECTS];
   state.sessions = [];
+  state.calendarEvents = [];
+  state.deletedCalendarEventIds = [];
   state.weeklyGoalHours = DEFAULT_STATE.weeklyGoalHours;
   state.lastModified = "";
   await clearSavedNotes();
@@ -580,6 +611,21 @@ function setView(viewName) {
   if (viewName === "review") renderReview();
   if (viewName === "calendar") renderAcademicCalendar();
   if (viewName === "notes") renderNotes();
+  if (viewName === "today") renderToday();
+}
+
+function setTheme(theme, savePreference = true) {
+  const selectedTheme = theme === "dark" ? "dark" : "light";
+  document.documentElement.dataset.theme = selectedTheme;
+  const darkMode = selectedTheme === "dark";
+  document.querySelector('meta[name="theme-color"]').content = darkMode ? "#0b1120" : "#f5f7fb";
+  byId("themeToggle").setAttribute("aria-label", darkMode ? "切換至淺色模式" : "切換至深色模式");
+  byId("themeToggle").title = darkMode ? "淺色模式" : "深色模式";
+  byId("themeToggle").setAttribute("aria-pressed", String(darkMode));
+  byId("themeToggle").innerHTML = darkMode
+    ? '<svg class="theme-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>'
+    : '<svg class="theme-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.5 8.5 0 1 0 20.2 15.1Z"/></svg>';
+  if (savePreference) localStorage.setItem("nhip-hoc-theme", selectedTheme);
 }
 
 function renderSubjectOptions() {
@@ -681,6 +727,8 @@ function renderToday() {
   renderSubjectRows(byId("subjectPreviewList"), weekSessions);
   renderSessions(byId("todaySessionList"), todaySessions, "今天還沒有學習紀錄", "開始計時，或手動記錄已完成的學習。");
   renderUpcomingBanner();
+  renderUpcomingEventList();
+  renderRecentActivity();
   renderTodaySchedule();
 }
 
@@ -757,10 +805,15 @@ function eventDateLabel(event) {
   return `${formatDate(start, { day: "numeric", month: "short" })} – ${formatDate(end, { day: "numeric", month: "short", year: "numeric" })}`;
 }
 
+function allCalendarEvents() {
+  return [...ACADEMIC_EVENTS, ...state.calendarEvents.map((event) => ({ ...event, custom: true }))];
+}
+
 function renderUpcomingBanner() {
   const banner = byId("upcomingEventBanner");
-  const upcomingEvents = ACADEMIC_EVENTS.filter((event) => event.start >= todayKey).sort((a, b) => a.start.localeCompare(b.start));
-  const activeEvents = ACADEMIC_EVENTS.filter((event) => event.start < todayKey && event.end >= todayKey).sort((a, b) => a.end.localeCompare(b.end));
+  const events = allCalendarEvents();
+  const upcomingEvents = events.filter((event) => event.start >= todayKey).sort((a, b) => a.start.localeCompare(b.start));
+  const activeEvents = events.filter((event) => event.start < todayKey && event.end >= todayKey).sort((a, b) => a.end.localeCompare(b.end));
   const event = upcomingEvents[0] || activeEvents[0];
   if (!event) {
     banner.hidden = true;
@@ -773,9 +826,59 @@ function renderUpcomingBanner() {
   banner.hidden = false;
 }
 
+function renderUpcomingEventList() {
+  const events = allCalendarEvents().filter((event) => event.end >= todayKey)
+    .sort((a, b) => a.start.localeCompare(b.start) || a.title.localeCompare(b.title)).slice(0, 4);
+  const container = byId("upcomingEventList");
+  if (!events.length) {
+    container.innerHTML = '<div class="empty-state"><strong>目前沒有近期日期</strong>你可以標記考試、作業或報告期限。</div>';
+    return;
+  }
+  container.innerHTML = events.map((event) => {
+    const daysUntil = Math.round((parseDate(event.start) - parseDate(todayKey)) / 86400000);
+    const countdown = daysUntil > 0 ? `${daysUntil} 天後` : daysUntil === 0 ? "今天" : "進行中";
+    const examClass = event.category === "考試" ? " is-exam" : "";
+    return `<article class="upcoming-item${examClass}">
+      <span class="upcoming-item-date">${escapeHtml(formatDate(parseDate(event.start), { month: "numeric", day: "numeric" }))}</span>
+      <span class="upcoming-item-copy"><strong>${escapeHtml(event.title)}</strong><small>${escapeHtml(event.category)} · ${countdown}</small></span>
+      ${event.category === "考試" ? '<span class="exam-indicator">考試</span>' : ""}
+    </article>`;
+  }).join("");
+}
+
+async function renderRecentActivity() {
+  const container = byId("recentActivityList");
+  const renderToken = ++recentActivityRenderToken;
+  try {
+    const notes = await getSavedNotes();
+    if (renderToken !== recentActivityRenderToken) return;
+    const items = [
+      ...notes.map((note) => ({ type: "note", id: note.id, subject: note.subject, date: note.date, createdAt: typeof note.createdAt === "string" ? note.createdAt : `${note.date}T12:00:00`, text: String(note.assignment || note.text || (note.image ? "已保存課堂照片" : "課堂筆記")) })),
+      ...state.sessions.map((session) => ({ type: "session", id: session.id, subject: session.subject, date: session.date, createdAt: session.startedAt || `${session.date}T12:00:00`, text: `${formatMinutes(session.durationSec)} 學習時段` })),
+    ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 5);
+    if (!items.length) {
+      container.innerHTML = '<div class="empty-state"><strong>還沒有最近活動</strong>拍下課堂重點或記錄學習後，這裡會顯示最新內容。</div>';
+      return;
+    }
+    container.innerHTML = items.map((item) => {
+      const isNote = item.type === "note";
+      const icon = isNote ? "▧" : "◷";
+      const when = formatDate(parseDate(item.date), { month: "numeric", day: "numeric" });
+      return `<button class="activity-item" type="button" ${isNote ? `data-open-saved-note="${escapeAttribute(item.id)}"` : 'data-view="review"'}>
+        <span class="activity-icon${isNote ? " is-note" : ""}" aria-hidden="true">${icon}</span>
+        <span class="activity-copy"><strong>${escapeHtml(item.subject)}</strong><small>${escapeHtml(item.text.slice(0, 90))}</small></span>
+        <span class="activity-meta">${escapeHtml(when)}<span aria-hidden="true">→</span></span>
+      </button>`;
+    }).join("");
+  } catch (error) {
+    if (renderToken !== recentActivityRenderToken) return;
+    container.innerHTML = `<div class="empty-state"><strong>無法讀取最近活動</strong>${escapeHtml(error.message || "請稍後再試。")}</div>`;
+  }
+}
+
 function renderAcademicCalendar() {
   const selectedMonth = byId("eventMonth").value;
-  const events = ACADEMIC_EVENTS.filter((event) => {
+  const events = allCalendarEvents().filter((event) => {
     if (selectedMonth === "all") return true;
     const monthStart = `2026-${selectedMonth}-01`;
     const lastDay = new Date(2026, Number(selectedMonth), 0).getDate();
@@ -802,8 +905,9 @@ function renderAcademicCalendar() {
       <div class="event-date-box"><strong>${dateRange}</strong><span>${monthLabel}</span></div>
       <div class="event-main"><div class="event-title-row"><h3>${escapeHtml(event.title)}</h3><span class="event-status ${statusClass}">${status}</span></div>
         ${event.detail ? `<p class="event-detail">${escapeHtml(event.detail)}</p>` : ""}
-        <span class="event-category">${escapeHtml(event.category)}</span>
+        <span class="event-category">${escapeHtml(event.category)}${event.custom ? " · 個人標記" : ""}</span>
       </div>
+      ${event.custom ? `<button class="event-remove" type="button" data-remove-event="${escapeAttribute(event.id)}" aria-label="刪除${escapeAttribute(event.title)}">刪除</button>` : ""}
     </article>`;
   }).join("");
 }
@@ -823,7 +927,7 @@ async function renderNotes() {
     clearNoteImageUrls();
     const notes = allNotes
       .filter((note) => selectedSubject === "all" || note.subject === selectedSubject)
-      .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt));
+      .sort((a, b) => b.date.localeCompare(a.date) || String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
     if (!notes.length) {
       container.innerHTML = `<div class="empty-state"><strong>尚無課堂筆記</strong>點選「拍攝筆記」，依科目與日期儲存照片或重點摘要。</div>`;
       return;
@@ -836,20 +940,20 @@ async function renderNotes() {
     container.innerHTML = [...groups.entries()].map(([date, dayNotes]) => {
       const heading = formatDate(parseDate(date), { weekday: "long", day: "numeric", month: "long", year: "numeric" });
       const cards = dayNotes.map((note) => {
-        const createdAt = new Date(note.createdAt);
+        const createdAt = new Date(note.createdAt || `${date}T12:00:00`);
         const time = new Intl.DateTimeFormat("zh-TW", { hour: "2-digit", minute: "2-digit" }).format(createdAt);
         let photo = "";
         if (note.image instanceof Blob) {
           const imageUrl = URL.createObjectURL(note.image);
           noteImageUrls.push(imageUrl);
-          photo = `<img class="note-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(note.subject)} 的課堂筆記照片，日期：${escapeAttribute(date)}" />`;
+          photo = `<button class="note-photo-open" type="button" data-view-note-photo="${escapeAttribute(imageUrl)}" data-photo-caption="${escapeAttribute(note.subject)} · ${escapeAttribute(date)}"><img class="note-image" src="${escapeAttribute(imageUrl)}" alt="${escapeAttribute(note.subject)} 的課堂筆記照片，日期：${escapeAttribute(date)}" /><span>點選放大照片</span></button>`;
         }
         const english = SUBJECT_ENGLISH.get(note.subject);
         if (note.assignment) {
           photo = '<div class="note-assignment"><strong>老師交代／作業</strong><p>' +
             escapeHtml(note.assignment) + '</p></div>' + photo;
         }
-        return `<article class="note-card">
+        return `<article class="note-card" data-note-id="${escapeAttribute(note.id)}">
           <div class="note-card-head"><div><strong>${escapeHtml(note.subject)}</strong>${english ? `<span class="subject-translation">${escapeHtml(english)}</span>` : ""}</div><span>${time}</span></div>
           ${note.text ? `<p class="note-card-text">${escapeHtml(note.text)}</p>` : ""}
           ${photo}
@@ -1122,6 +1226,62 @@ function openGoalDialog() {
   byId("goalDialog").showModal();
 }
 
+function openEventDialog() {
+  byId("eventTitleInput").value = "";
+  byId("eventStartInput").value = todayKey;
+  byId("eventEndInput").value = "";
+  byId("eventEndInput").min = todayKey;
+  byId("eventCategoryInput").value = "考試";
+  byId("eventDetailInput").value = "";
+  byId("eventError").hidden = true;
+  byId("eventDialog").showModal();
+}
+
+function saveCalendarEvent() {
+  const form = byId("eventForm");
+  if (!form.reportValidity()) return;
+  const start = byId("eventStartInput").value;
+  const end = byId("eventEndInput").value || start;
+  if (end < start) {
+    byId("eventError").textContent = "結束日期不能早於開始日期。";
+    byId("eventError").hidden = false;
+    return;
+  }
+  state.calendarEvents.push({
+    id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    start,
+    end,
+    title: byId("eventTitleInput").value.trim(),
+    detail: byId("eventDetailInput").value.trim(),
+    category: byId("eventCategoryInput").value,
+  });
+  saveState();
+  byId("eventDialog").close();
+  renderAcademicCalendar();
+  renderToday();
+}
+
+async function openSavedNote(noteId) {
+  const notes = await getSavedNotes();
+  const note = notes.find((item) => item.id === noteId);
+  if (!note) return;
+  byId("noteSubjectFilter").value = note.subject;
+  setView("notes");
+  await renderNotes();
+  const card = [...document.querySelectorAll("[data-note-id]")].find((item) => item.dataset.noteId === noteId);
+  if (card) {
+    card.classList.add("note-card-highlight");
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => card.classList.remove("note-card-highlight"), 1800);
+  }
+}
+
+function openPhotoViewer(imageUrl, caption) {
+  byId("photoViewerImage").src = imageUrl;
+  byId("photoViewerCaption").textContent = caption;
+  byId("photoViewerDialog").showModal();
+}
+
 function saveGoal() {
   const input = byId("weeklyGoalInput");
   if (!input.reportValidity()) return;
@@ -1133,7 +1293,12 @@ function saveGoal() {
 }
 
 function bindEvents() {
-  document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
+  setTheme(document.documentElement.dataset.theme || "light", false);
+  byId("themeToggle").addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+  document.addEventListener("click", (event) => {
+    const viewButton = event.target.closest("[data-view]");
+    if (viewButton) setView(viewButton.dataset.view);
+  });
   document.querySelectorAll("[data-open-session]").forEach((button) => button.addEventListener("click", openSessionDialog));
   document.querySelectorAll("[data-open-note]").forEach((button) => button.addEventListener("click", () => openNoteDialog()));
   document.addEventListener("click", (event) => {
@@ -1142,6 +1307,21 @@ function bindEvents() {
   document.addEventListener("click", (event) => {
     const classNoteButton = event.target.closest("[data-class-note]");
     if (classNoteButton) openNoteDialog(classNoteButton.dataset.subject, classNoteButton.dataset.date);
+  });
+  document.addEventListener("click", (event) => {
+    const savedNoteButton = event.target.closest("[data-open-saved-note]");
+    if (savedNoteButton) openSavedNote(savedNoteButton.dataset.openSavedNote).catch((error) => console.error("Could not open saved note", error));
+    const photoButton = event.target.closest("[data-view-note-photo]");
+    if (photoButton) openPhotoViewer(photoButton.dataset.viewNotePhoto, photoButton.dataset.photoCaption || "");
+    const removeEventButton = event.target.closest("[data-remove-event]");
+    if (removeEventButton) {
+      const deletedId = removeEventButton.dataset.removeEvent;
+      state.calendarEvents = state.calendarEvents.filter((item) => item.id !== deletedId);
+      state.deletedCalendarEventIds = [...new Set([...state.deletedCalendarEventIds, deletedId])];
+      saveState();
+      renderAcademicCalendar();
+      renderToday();
+    }
   });
   byId("schedulePreviousWeek").addEventListener("click", () => { scheduleWeekOffset -= 1; renderSchedule(); });
   byId("scheduleNextWeek").addEventListener("click", () => { scheduleWeekOffset += 1; renderSchedule(); });
@@ -1215,6 +1395,13 @@ function bindEvents() {
     if (cloudUser) setSyncStatus("離線 · 連線後同步", "pending");
   });
   byId("eventMonth").addEventListener("change", renderAcademicCalendar);
+  byId("openEventDialog").addEventListener("click", openEventDialog);
+  byId("saveCalendarEvent").addEventListener("click", saveCalendarEvent);
+  byId("eventStartInput").addEventListener("change", () => { byId("eventEndInput").min = byId("eventStartInput").value; });
+  byId("closePhotoViewer").addEventListener("click", () => byId("photoViewerDialog").close());
+  byId("photoViewerDialog").addEventListener("click", (event) => {
+    if (event.target === byId("photoViewerDialog")) byId("photoViewerDialog").close();
+  });
   byId("openSubjectDialog").addEventListener("click", () => byId("subjectDialog").showModal());
   byId("saveSubject").addEventListener("click", saveSubject);
   byId("openGoalSettings").addEventListener("click", openGoalDialog);
@@ -1223,7 +1410,7 @@ function bindEvents() {
   byId("previousWeek").addEventListener("click", () => { reviewWeekOffset -= 1; renderReview(); });
   byId("nextWeek").addEventListener("click", () => { if (reviewWeekOffset < 0) reviewWeekOffset += 1; renderReview(); });
   byId("goToThisWeek").addEventListener("click", () => { reviewWeekOffset = 0; renderReview(); });
-  ["sessionDialog", "subjectDialog", "goalDialog", "noteDialog"].forEach((id) => {
+  ["sessionDialog", "subjectDialog", "goalDialog", "noteDialog", "eventDialog"].forEach((id) => {
     byId(id).addEventListener("click", (event) => {
       if (event.target === byId(id)) byId(id).close();
     });

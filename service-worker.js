@@ -1,4 +1,4 @@
-const CACHE_NAME = "nhip-hoc-v6";
+const CACHE_NAME = "nhip-hoc-v7";
 const APP_FILES = ["./", "./index.html", "./styles.css", "./app.js", "./cloud-config.js", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", (event) => {

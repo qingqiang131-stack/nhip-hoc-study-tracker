@@ -9,6 +9,15 @@
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
     <title>學習節奏</title>
+    <script>
+      (() => {
+        let savedTheme = null;
+        try { savedTheme = localStorage.getItem("nhip-hoc-theme"); } catch {}
+        const theme = savedTheme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+        document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#0b1120" : "#f5f7fb";
+      })();
+    </script>
   </head>
   <body>
     <main class="auth-gate" id="authGate" aria-labelledby="authTitle">
@@ -69,6 +78,9 @@
             <span class="today-date" id="topbarDate"></span>
             <span class="sync-status" id="syncStatus" hidden></span>
             <span class="account-email" id="accountEmail" hidden></span>
+            <button class="theme-toggle" id="themeToggle" type="button" aria-label="切換至深色模式" title="深色模式">
+              <svg class="theme-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.5 8.5 0 1 0 20.2 15.1Z"/></svg>
+            </button>
             <button class="button button-small button-secondary sign-out-button" id="signOutButton" type="button" hidden>登出</button>
             <button class="avatar" type="button" aria-label="帳戶">學</button>
           </div>
@@ -83,7 +95,7 @@
                 <p class="heading-copy">選一件小事，開始今天的學習。</p>
               </div>
               <div class="heading-actions">
-                <button class="button button-secondary" type="button" data-open-note><span aria-hidden="true">▧</span> 拍攝筆記</button>
+                <button class="button button-primary capture-primary" type="button" data-open-note><span aria-hidden="true">＋</span> 拍攝課堂內容</button>
                 <button class="button button-primary desktop-log-button" type="button" data-open-session><span aria-hidden="true">＋</span> 記錄學習</button>
               </div>
             </div>
@@ -180,6 +192,17 @@
               </div>
               <div class="session-list" id="todaySessionList"></div>
             </section>
+
+            <div class="content-grid activity-grid">
+              <section class="surface-panel recent-activity-panel" aria-labelledby="recentActivityTitle">
+                <div class="section-heading"><div><p class="eyebrow">最新保存</p><h2 id="recentActivityTitle">最近活動</h2></div><button class="text-button" type="button" data-view="notes">查看所有筆記 <span aria-hidden="true">→</span></button></div>
+                <div class="activity-list" id="recentActivityList" aria-live="polite"></div>
+              </section>
+              <section class="surface-panel upcoming-list-panel" aria-labelledby="upcomingListTitle">
+                <div class="section-heading"><div><p class="eyebrow">提早準備</p><h2 id="upcomingListTitle">近期重要日期</h2></div><button class="text-button" type="button" data-view="calendar">查看日曆 <span aria-hidden="true">→</span></button></div>
+                <div class="upcoming-list" id="upcomingEventList"></div>
+              </section>
+            </div>
           </section>
 
           <section class="view-panel" id="scheduleView" aria-labelledby="scheduleTitle" hidden>
@@ -279,6 +302,7 @@
                 <h1 id="calendarTitle">校務行事曆</h1>
                 <p class="heading-copy">查看假期、考試與學期重要期限。</p>
               </div>
+              <button class="button button-primary" id="openEventDialog" type="button"><span aria-hidden="true">＋</span> 標記重要日期</button>
             </div>
             <section class="surface-panel calendar-panel" aria-labelledby="calendarPanelTitle">
               <div class="section-heading calendar-heading">
@@ -358,6 +382,24 @@
       </form>
     </dialog>
 
+    <dialog class="app-dialog app-dialog-small" id="eventDialog">
+      <form method="dialog" id="eventForm">
+        <div class="dialog-heading"><div><p class="eyebrow">個人行事曆</p><h2>標記重要日期</h2></div><button class="icon-button dialog-close" type="submit" value="cancel" formnovalidate aria-label="關閉">×</button></div>
+        <label class="form-label" for="eventTitleInput">事件名稱</label>
+        <input class="form-control" id="eventTitleInput" type="text" maxlength="80" placeholder="例如：台灣社會期中報告" required />
+        <div class="form-row">
+          <div><label class="form-label" for="eventStartInput">日期</label><input class="form-control" id="eventStartInput" type="date" required /></div>
+          <div><label class="form-label" for="eventEndInput">結束日期 <span class="optional-label">（選填）</span></label><input class="form-control" id="eventEndInput" type="date" /></div>
+        </div>
+        <label class="form-label" for="eventCategoryInput">類別</label>
+        <select class="form-control" id="eventCategoryInput"><option value="考試">考試</option><option value="作業期限">作業期限</option><option value="報告">報告</option><option value="提醒">提醒</option></select>
+        <label class="form-label" for="eventDetailInput">備註 <span class="optional-label">（選填）</span></label>
+        <textarea class="form-control note-textarea" id="eventDetailInput" maxlength="300" placeholder="考試範圍、要準備的資料……"></textarea>
+        <p class="form-error" id="eventError" role="alert" hidden></p>
+        <div class="dialog-actions"><button class="button button-secondary" type="submit" value="cancel" formnovalidate>取消</button><button class="button button-primary" id="saveCalendarEvent" type="button">儲存日期</button></div>
+      </form>
+    </dialog>
+
     <dialog class="app-dialog note-dialog" id="noteDialog">
       <form method="dialog" id="noteForm">
         <div class="dialog-heading"><div><p class="eyebrow">課堂筆記</p><h2>儲存重要內容</h2></div><button class="icon-button dialog-close" type="submit" value="cancel" formnovalidate aria-label="關閉">×</button></div>
@@ -376,6 +418,12 @@
         <p class="form-error" id="noteError" role="alert" hidden></p>
         <div class="dialog-actions"><button class="button button-secondary" type="submit" value="cancel" formnovalidate>取消</button><button class="button button-primary" id="saveNote" type="button">儲存筆記</button></div>
       </form>
+    </dialog>
+
+    <dialog class="photo-viewer-dialog" id="photoViewerDialog" aria-label="筆記照片">
+      <button class="photo-viewer-close" id="closePhotoViewer" type="button" aria-label="關閉照片">×</button>
+      <img id="photoViewerImage" alt="課堂筆記照片" />
+      <p id="photoViewerCaption"></p>
     </dialog>
 
     <script src="cloud-config.js" defer></script>
