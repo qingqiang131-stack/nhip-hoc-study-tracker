@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5ee">
+  <meta name="description" content="Sổ học tiếng Hoa mỗi ngày trên hành trình chinh phục TOCFL C1.">
+  <title>C1 mỗi ngày — Sổ học tiếng Hoa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#17231d;--muted:#69766e;--paper:#f7f5ee;--white:#fffefa;--green:#16744c;--green-dark:#0d4936;--green-pale:#d8f0df;--red:#d7443e;--red-dark:#a82b35;--red-pale:#ffe0d8;--yellow:#f6ce61;--blue:#cce9f4;--lilac:#e8ddfb;--line:#e5e6da;--shadow:0 18px 55px #193c2a12;font-family:"DM Sans","Noto Sans TC",sans-serif;color:var(--ink)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);min-width:320px}button,input,select,textarea{font:inherit}button{cursor:pointer}.wrap{width:min(1160px,calc(100% - 40px));margin:auto}.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #dfe4d9}.brand{display:flex;gap:11px;align-items:center;color:var(--ink);text-decoration:none}.brand-mark{height:40px;width:40px;border-radius:14px;background:var(--green);display:grid;place-items:center;color:#fff;font:800 18px "Noto Sans TC";box-shadow:inset -8px -7px 0 #d7443e}.brand b{display:block;font-size:14px;letter-spacing:.2px}.brand small{display:block;color:#849087;font-size:9px;letter-spacing:1.4px;text-transform:uppercase;margin-top:3px}.navlinks{display:flex;gap:6px;align-items:center}.navlinks a{color:#5f6e64;text-decoration:none;font-size:11px;font-weight:700;padding:9px 12px;border-radius:20px}.navlinks a:hover{background:#e7ede4;color:var(--green-dark)}.today{border-radius:20px;background:#fff;padding:9px 12px;color:var(--green-dark);font-size:10px;font-weight:700}
+    .hero{margin:27px 0 19px;min-height:300px;border-radius:28px;position:relative;overflow:hidden;background:var(--green-dark);color:#fff;padding:42px 48px;display:grid;grid-template-columns:1.35fr .65fr;align-items:center;box-shadow:var(--shadow)}.hero:before{content:"";position:absolute;width:440px;height:440px;border-radius:50%;border:1px solid #ffffff1b;right:4%;top:-230px}.hero:after{content:"";position:absolute;width:320px;height:320px;border-radius:50%;border:1px solid #ffffff20;right:11%;top:-164px}.hero-copy{position:relative;z-index:1;max-width:630px}.eyebrow{font-size:10px;letter-spacing:2px;font-weight:800;text-transform:uppercase;color:#bbebbe}.hero h1{font:800 clamp(35px,5vw,58px)/1.05 "DM Sans","Noto Sans TC";letter-spacing:-2.8px;margin:14px 0}.hero h1 em{font-style:normal;color:var(--yellow)}.hero p{max-width:555px;color:#d3e5da;line-height:1.75;font-size:13px;margin:0}.hero-buttons{display:flex;gap:9px;margin-top:22px;flex-wrap:wrap}.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:800;font-size:11px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn-lime{background:var(--yellow);color:#263822}.btn-ghost{background:#ffffff16;color:white;border:1px solid #ffffff39}.hero-stamp{position:relative;z-index:1;justify-self:center;width:190px;height:190px;border-radius:50%;background:var(--red);display:grid;place-content:center;text-align:center;transform:rotate(7deg);box-shadow:11px 12px 0 #0a392e}.hero-stamp:before{content:"";position:absolute;inset:9px;border:1px dashed #ffffff80;border-radius:50%}.hero-stamp strong{font:800 54px/1 "Noto Sans TC"}.hero-stamp small{font-size:10px;letter-spacing:1.3px;margin-top:7px;text-transform:uppercase}.hero-stamp span{font-size:9px;color:#ffe8db;margin-top:4px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:33px}.stat{border-radius:18px;padding:17px 19px;background:var(--white);border:1px solid #e9e8df;box-shadow:0 6px 25px #193c2a08;position:relative;overflow:hidden}.stat:nth-child(1){background:var(--green-pale)}.stat:nth-child(2){background:var(--red-pale)}.stat:nth-child(3){background:var(--blue)}.stat:nth-child(4){background:var(--yellow)}.stat label{font-size:10px;color:#425148;font-weight:700}.stat strong{display:block;font:800 30px "DM Sans";margin:9px 0 3px}.stat small{font-size:9px;color:#5c6c61}.stat i{position:absolute;right:15px;top:11px;font-style:normal;font-size:21px;opacity:.7}
+    .section{margin:0 0 38px;scroll-margin-top:15px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:16px}.kicker{color:var(--red);font-size:9px;font-weight:800;letter-spacing:1.7px;text-transform:uppercase;margin-bottom:6px}.section-head h2{font:800 25px "DM Sans","Noto Sans TC";letter-spacing:-.8px;margin:0}.section-head p{font-size:11px;color:var(--muted);margin:6px 0 0}.section-count{font-size:10px;color:#627166;background:#fff;border:1px solid var(--line);padding:7px 10px;border-radius:20px;white-space:nowrap}.layout-2{display:grid;grid-template-columns:1.03fr .97fr;gap:15px;align-items:start}.panel{background:var(--white);border:1px solid #e8e8dd;border-radius:19px;padding:20px;box-shadow:var(--shadow)}.panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.panel-title h3{font-size:13px;margin:0}.tiny-label{font-size:9px;color:#fff;background:var(--green);padding:6px 9px;border-radius:20px;font-weight:800}
+    .vocab-tools{display:flex;gap:8px;margin-bottom:12px}.search{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;font-size:11px;outline:none}.search:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:#5fa278;box-shadow:0 0 0 3px #16744c15}.word-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.word{border:1px solid transparent;border-radius:13px;padding:12px;min-height:118px;position:relative;transition:.15s}.word:nth-child(4n+1){background:#dff3df;border-color:#c2e5c8}.word:nth-child(4n+2){background:#ffe2dc;border-color:#f5c9c1}.word:nth-child(4n+3){background:#d9eff7;border-color:#c2e0eb}.word:nth-child(4n){background:#f3e9bf;border-color:#eadca1}.word.mastered{opacity:.58;filter:saturate(.65)}.word-top{display:flex;align-items:baseline;gap:8px}.word-top strong{font:800 22px "Noto Sans TC";color:#153f31}.word-top span{font-size:9px;color:#5e7165}.meaning{font-weight:700;font-size:11px;margin:5px 0}.word-note{font-size:9px;color:#5d6b62;line-height:1.45}.known{border:0;background:#ffffffb8;color:#264334;border-radius:7px;padding:5px 7px;font-size:8px;font-weight:800;margin-top:8px}.word.mastered .known{background:var(--green);color:#fff}.grammar-list{display:grid;gap:9px}.grammar{border-radius:13px;padding:13px 14px;border-left:4px solid var(--green);background:#e5f3e8}.grammar:nth-child(3n+2){border-left-color:var(--red);background:#ffe9e2}.grammar:nth-child(3n){border-left-color:#278cb1;background:#e2f3f8}.grammar-top{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}.grammar-top strong{font:800 17px "Noto Sans TC";color:#123d2d}.grammar-top span{font-size:9px;color:#65766a}.grammar p{font-size:10px;line-height:1.6;color:#3f5146;margin:7px 0 0}.example{font:11px/1.55 "Noto Sans TC";margin-top:7px;color:#243d31}.example em{font-style:normal;color:var(--red-dark);font-weight:700}
+    .paragraphs{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.para{border-radius:16px;padding:16px;min-height:160px;position:relative;overflow:hidden}.para:nth-child(1){background:#d9efdf}.para:nth-child(2){background:#ffdfd8}.para:nth-child(3){background:#deedf7}.para:nth-child(4){background:#f4e7b7}.para span{font:800 28px "Noto Sans TC";color:#152f24;opacity:.85}.para h3{font-size:12px;margin:7px 0}.para p{font-size:10px;line-height:1.6;color:#46574b;margin:0}.para b{color:var(--red-dark)}
+    .log-grid{display:grid;grid-template-columns:.78fr 1.22fr;gap:14px}.log-panel{background:var(--red-dark);color:white;border-radius:20px;padding:22px}.log-panel .kicker{color:#ffd578}.log-panel h3{font-size:17px;margin:0 0 5px}.log-panel>p{font-size:10px;line-height:1.55;color:#f7dcd5;margin:0 0 15px}.field{display:grid;gap:5px;margin:10px 0}.field label{font-size:9px;font-weight:800;color:#ffe6dd}.field input,.field select,.field textarea{width:100%;border:1px solid #ffffff50;background:#fff;color:var(--ink);border-radius:9px;padding:9px 10px;font-size:10px;outline:none}.field textarea{min-height:84px;resize:vertical;line-height:1.5}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.log-actions{display:flex;gap:8px;align-items:center;margin-top:13px;flex-wrap:wrap}.save{background:var(--yellow);color:#283622}.save-status{font-size:9px;color:#ffe5dc}.history-panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px}.history-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}.history-title h3{font-size:13px;margin:0}.history-title span{font-size:9px;color:var(--muted)}.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:12px 0 16px}.day{border-radius:10px;text-align:center;padding:8px 4px;background:#f1f2ed;color:#9aa49b}.day b{display:block;font-size:8px;font-weight:700}.day i{display:block;font-style:normal;font-size:15px;margin:6px 0}.day small{font-size:7px}.day.done{background:#d7f0de;color:var(--green-dark)}.day.today{outline:2px solid var(--red)}.history-list{display:grid;gap:8px;max-height:230px;overflow:auto}.history-row{border:1px solid #eeeee7;border-radius:11px;padding:10px 12px;display:grid;grid-template-columns:78px 1fr auto;gap:10px;align-items:center}.history-date{font-size:9px;font-weight:800;color:var(--green-dark)}.history-text strong{font-size:10px;display:block}.history-text small{font-size:8px;color:#8a938a;display:block;margin-top:3px}.history-min{font-size:9px;font-weight:800;color:var(--red-dark)}.empty{font-size:10px;color:#89948b;text-align:center;padding:23px 10px;border:1px dashed var(--line);border-radius:10px}.foot{padding:17px 0 34px;border-top:1px solid #e4e4d9;color:#818a82;font-size:9px;display:flex;justify-content:space-between;gap:10px}.foot strong{color:var(--green-dark)}
+    @media(max-width:850px){.hero{padding:32px;grid-template-columns:1fr .38fr}.hero-stamp{width:140px;height:140px}.hero-stamp strong{font-size:42px}.stats{grid-template-columns:repeat(2,1fr)}.paragraphs{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.wrap{width:min(100% - 26px,1160px)}.topbar{height:62px}.navlinks a{padding:8px;font-size:9px}.navlinks a:nth-child(2){display:none}.today{display:none}.hero{margin-top:16px;padding:27px 23px;grid-template-columns:1fr;min-height:0}.hero h1{font-size:39px}.hero p{font-size:11px}.hero-stamp{display:none}.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:25px}.layout-2,.log-grid{grid-template-columns:1fr}.paragraphs{gap:8px}.para{min-height:145px;padding:13px}.section-head h2{font-size:22px}.section-head{align-items:start}.section-count{font-size:8px}.panel{padding:15px}.foot{flex-direction:column}.history-row{grid-template-columns:65px 1fr auto}}@media(max-width:390px){.word-grid{grid-template-columns:1fr}.navlinks a{padding:7px}.hero h1{font-size:34px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="C1 mỗi ngày">
+        <span class="brand-mark">中</span><span><b>C1 mỗi ngày</b><small>Vietnamese · Mandarin learning log</small></span>
+      </a>
+      <nav class="navlinks" aria-label="Điều hướng">
+        <a href="#tu-vung">Từ vựng</a><a href="#ngu-phap">Ngữ pháp</a><a href="#nhat-ky">Nhật ký</a>
+      </nav>
+      <span class="today" id="todayLabel"></span>
+    </header>
+
+    <main id="home">
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">Từng ngày một bước · 每天進步一點</div>
+          <h1>Học hôm nay.<br><em>Chạm C1 ngày mai.</em></h1>
+          <p>Sổ học cá nhân cho hành trình tiếng Hoa của bạn. Ôn bài đọc về sự đa dạng, tích lũy từ vựng và ghi lại từng buổi học — tiến bộ nhỏ mỗi ngày sẽ đưa bạn đến gần C1 hơn.</p>
+          <div class="hero-buttons"><a class="btn btn-lime" href="#nhat-ky">✎ Ghi buổi học hôm nay</a><a class="btn btn-ghost" href="#tu-vung">Bắt đầu ôn từ →</a></div>
+        </div>
+        <div class="hero-stamp" aria-label="Học mỗi ngày"><strong>學</strong><small>mỗi ngày</small><span>một bước gần C1</span></div>
+      </section>
+
+      <section class="stats" aria-label="Tiến độ học tập">
+        <article class="stat"><i>🔥</i><label>Chuỗi ngày học</label><strong id="streak">0</strong><small>ngày liên tiếp</small></article>
+        <article class="stat"><i>⏱</i><label>Tổng thời gian</label><strong id="minutes">0</strong><small>phút đã ghi nhận</small></article>
+        <article class="stat"><i>📚</i><label>Từ đã nhớ</label><strong id="knownCount">0/0</strong><small>từ trong bài này</small></article>
+        <article class="stat"><i>✦</i><label>Ngày có học</label><strong id="daysCount">0</strong><small>ngày được ghi lại</small></article>
+      </section>
+
+      <section class="section" id="tu-vung">
+        <div class="section-head"><div><div class="kicker">Bài đọc · 打破膚色的個體差異</div><h2>Từ vựng trọng tâm</h2><p>Chọn “Đã nhớ” để theo dõi những từ bạn đã ôn thuộc.</p></div><span class="section-count">23 từ · Hoa phồn thể</span></div>
+        <div class="panel">
+          <div class="vocab-tools"><input class="search" id="wordSearch" type="search" placeholder="Tìm chữ Hán, pinyin hoặc nghĩa tiếng Việt…" aria-label="Tìm từ vựng"></div>
+          <div class="word-grid" id="wordGrid"></div>
+        </div>
+      </section>
+
+      <section class="section" id="ngu-phap">
+        <div class="section-head"><div><div class="kicker">Cấu trúc ứng dụng</div><h2>Ngữ pháp & cách diễn đạt</h2><p>Ghi nhớ mẫu câu, rồi thử đặt câu của riêng bạn.</p></div><span class="section-count">8 cấu trúc</span></div>
+        <div class="layout-2">
+          <article class="panel"><div class="panel-title"><h3>Mẫu câu thường gặp</h3><span class="tiny-label">PATTERNS</span></div><div class="grammar-list" id="grammarList"></div></article>
+          <article class="panel"><div class="panel-title"><h3>Từ nối & cách nói giàu sắc thái</h3><span class="tiny-label" style="background:#d7443e">EXPRESSIONS</span></div><div class="grammar-list" id="expressionList"></div></article>
+        </div>
+      </section>
+
+      <section class="section" id="tom-tat">
+        <div class="section-head"><div><div class="kicker">Đọc hiểu</div><h2>Bốn đoạn — một thông điệp</h2></div><span class="section-count">Tóm tắt bài học</span></div>
+        <div class="paragraphs">
+          <article class="para"><span>一</span><h3>Đồng nhất & định kiến</h3><p>Xã hội coi trọng sự giống nhau có thể khiến <b>định kiến</b> hình thành và ý tưởng đa dạng bị xem nhẹ.</p></article>
+          <article class="para"><span>二</span><h3>“Màu da” là màu nào?</h3><p>Ví dụ bút sáp màu da gợi ra câu hỏi: màu da có thể chỉ có một màu hay không?</p></article>
+          <article class="para"><span>三</span><h3>Tôn trọng khác biệt</h3><p>Giáo dục khuyến khích trẻ đón nhận khác biệt; thương hiệu cũng điều chỉnh thông điệp về màu da.</p></article>
+          <article class="para"><span>四</span><h3>Mỗi người một sắc màu</h3><p>Mở lòng và mở rộng tầm nhìn giúp ta thấy <b>vẻ đẹp riêng</b> của mỗi người.</p></article>
+        </div>
+      </section>
+
+      <section class="section" id="nhat-ky">
+        <div class="section-head"><div><div class="kicker">Hành trình lên C1 · 每日紀錄</div><h2>Nhật ký học mỗi ngày</h2><p>Ghi lại hôm nay bạn đã học gì. Dữ liệu được lưu trên trình duyệt này.</p></div><span class="section-count">Tự lưu theo ngày</span></div>
+        <div class="log-grid">
+          <form class="log-panel" id="logForm">
+            <div class="kicker">BUỔI HỌC CỦA BẠN</div><h3>Hôm nay bạn đã tiến bộ thế nào?</h3><p>Mỗi ngày ghi một lần; lưu lại lần nữa sẽ cập nhật nhật ký của ngày đó.</p>
+            <div class="field-row"><div class="field"><label for="logDate">Ngày học</label><input id="logDate" type="date" required></div><div class="field"><label for="logMinutes">Thời gian (phút)</label><input id="logMinutes" type="number" min="1" max="1440" placeholder="30" required></div></div>
+            <div class="field"><label for="logFocus">Nội dung / kỹ năng</label><select id="logFocus"><option>Từ vựng</option><option>Ngữ pháp</option><option>Đọc hiểu</option><option>Nghe</option><option>Nói</option><option>Viết</option><option>Ôn tập tổng hợp</option></select></div>
+            <div class="field"><label for="logNote">Ghi chú hôm nay</label><textarea id="logNote" placeholder="Hôm nay mình học được gì? Từ nào cần ôn lại?…"></textarea></div>
+            <div class="log-actions"><button class="btn save" type="submit">Lưu nhật ký ✓</button><span class="save-status" id="saveStatus" aria-live="polite"></span></div>
+          </form>
+          <article class="history-panel">
+            <div class="history-title"><h3>Nhịp học gần đây</h3><span id="historyTotal">Chưa có buổi học nào</span></div>
+            <div class="week" id="weekGrid" aria-label="Lịch học 7 ngày gần đây"></div>
+            <div class="history-list" id="historyList"></div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer class="foot"><span><strong>C1 mỗi ngày</strong> · Hành trình của bạn được tạo nên từ những buổi học nhỏ.</span><span>Nhật ký lưu cục bộ trên trình duyệt · Local storage</span></footer>
+  </div>
+
+  <script>
+    const WORDS = [
+      ["地域關係","dìyù guānxì","mối liên hệ khu vực","地域 / 關係"],["民族共性","mínzú gòngxìng","đặc điểm chung của dân tộc","共性 = điểm chung"],["形塑力","xíngsùlì","sức định hình, ảnh hưởng định hình","形塑 + 力"],["具體","jùtǐ","cụ thể","具體表現在 = biểu hiện cụ thể ở"],["既定印象","jìdìng yìnxiàng","ấn tượng có sẵn, định kiến","既定 = đã có sẵn"],["先入為主","xiānrùwéizhǔ","định kiến từ trước","先入 = vào trước"],["同質性","tóngzhíxìng","tính đồng nhất","同質 + 性"],["一致性","yízhìxìng","tính nhất quán, sự đồng dạng","一致 = đồng nhất"],["普羅大眾","pǔluó dàzhòng","đông đảo công chúng","cách nói trang trọng"],["生活準則","shēnghuó zhǔnzé","quy tắc sống","準則 = nguyên tắc"],["膚色","fūsè","màu da","膚 = da"],["究竟","jiūjìng","rốt cuộc, thực sự","dùng trong câu hỏi"],["蠟筆","làbǐ","bút sáp màu","借用蠟筆 = mượn bút sáp"],["桃色","táosè","màu hồng đào","桃 = quả đào"],["米色","mǐsè","màu be","米 = gạo"],["棕色","zōngsè","màu nâu","顏色"],["掀起","xiānqǐ","làm dấy lên, khơi lên","掀起一陣風潮"],["小旋風","xiǎo xuànfēng","làn sóng nhỏ","nghĩa bóng: phong trào"],["刮向","guāxiàng","thổi/lan về phía","刮 + 向"],["致力推動","zhìlì tuīdòng","nỗ lực thúc đẩy","致力於 + việc"],["尊重與接納","zūnzhòng yǔ jiēnà","tôn trọng và đón nhận","接納 = chấp nhận"],["差異","chāyì","sự khác biệt","尊重差異"],["與時俱進","yǔshíjùjìn","bắt kịp thời đại","thành ngữ"],["開架式","kāijiàshì","bán tự chọn trên kệ","開架式商品"],["淘汰","táotài","loại bỏ","淘汰舊包裝"],["淡斑","dànbān","làm mờ đốm/nám","淡 = làm nhạt"],["囿於","yòuyú","bị hạn chế/bó buộc bởi","囿於環境"],["開展視野","kāizhǎn shìyě","mở rộng tầm nhìn","視野 = tầm nhìn"],["拜……所賜","bài … suǒ cì","nhờ vào …","cấu trúc cố định"],["突顯","tūxiǎn","làm nổi bật","突 = đột ngột; 顯 = hiện rõ"],["多采多姿","duōcǎiduōzī","đa dạng, muôn màu","cũng viết 多彩多姿"],["環顧","huángù","nhìn quanh","環顧四周"],["專屬","zhuānshǔ","riêng dành cho","專屬色彩"]
+    ];
+    const GRAMMAR = [
+      ["以……為例","yǐ…wéi lì","Lấy … làm ví dụ.","以日本為例。","Lấy Nhật Bản làm ví dụ."],
+      ["對……有很大的……力","duì…yǒu hěn dà de…lì","Có ảnh hưởng / sức tác động lớn đến …","地域關係對文化有很大的形塑力。","Mối liên hệ khu vực ảnh hưởng lớn đến văn hóa."],
+      ["具體表現在……","jùtǐ biǎoxiàn zài…","Biểu hiện cụ thể ở …","差異具體表現在生活經驗中。","Khác biệt biểu hiện cụ thể trong trải nghiệm sống."],
+      ["不只……更……","bùzhǐ…gèng…","Không chỉ … mà còn …","膚色不只帶來印象，更留下印記。","Màu da không chỉ tạo ấn tượng mà còn để lại dấu ấn."],
+      ["無論……都……","wúlùn…dōu…","Bất kể … đều …","無論差異大小，都應互相尊重。","Bất kể khác biệt lớn nhỏ, đều nên tôn trọng nhau."],
+      ["拜……所賜","bài…suǒ cì","Nhờ vào …","拜網路傳播所賜，資訊流通更快。","Nhờ Internet, thông tin lưu chuyển nhanh hơn."],
+      ["當……，將能……","dāng…, jiāng néng…","Khi …, sẽ có thể …","當我們打開心牆，將能看見更多可能。","Khi mở lòng, ta sẽ thấy nhiều khả năng hơn."],
+      ["讓……發起……","ràng…fāqǐ…","Khiến / giúp … khởi xướng …","這個問題讓她發起一項計畫。","Vấn đề này khiến cô ấy khởi xướng một dự án."]
+    ];
+    const EXPRESSIONS = [
+      ["以及","yǐjí","và, cũng như; nối các ý hoặc thành phần liệt kê.","既定印象，以及先入為主的想法","Ấn tượng có sẵn, cũng như những suy nghĩ định kiến."],
+      ["往往","wǎngwǎng","thường, thường hay; nêu xu hướng phổ biến.","同質性往往是生活準則。","Tính đồng nhất thường là quy tắc sống."],
+      ["格外","géwài","đặc biệt, hơn mức bình thường.","學校格外重視同質性。","Nhà trường đặc biệt coi trọng tính đồng nhất."],
+      ["不時","bùshí","đôi khi, thỉnh thoảng; việc có lúc xảy ra.","多樣化的概念不時遭受排擠。","Khái niệm đa dạng đôi khi bị gạt ra ngoài."],
+      ["究竟……？","jiūjìng…?","rốt cuộc …?; nhấn mạnh câu hỏi muốn tìm câu trả lời.","膚色究竟是什麼顏色？","Rốt cuộc màu da là màu gì?"],
+      ["又或","yòu huò","hoặc là; cách nối lựa chọn trang trọng.","換到日本，又或其他國家。","Chuyển sang Nhật Bản hoặc quốc gia khác."],
+      ["並非易事","bìngfēi yì shì","không phải chuyện dễ dàng.","打破舊認知並非易事。","Phá bỏ quan niệm cũ không phải chuyện dễ."],
+      ["試著","shìzhe","thử, cố gắng làm điều gì.","試著打破心中高牆。","Thử phá bỏ bức tường trong lòng."]
+    ];
+    const STORAGE_KEY = "c1-everyday-study-v1";
+    const $ = s => document.querySelector(s);
+    const dateISO = d => {const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};
+    const readData = () => {try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||{logs:{},known:[]}}catch{return {logs:{},known:[]}}};
+    let state = readData();
+    function saveData(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
+    function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+    function renderWords(q=""){
+      const query=q.trim().toLowerCase();
+      const list=WORDS.filter(w=>w.join(" ").toLowerCase().includes(query));
+      $("#wordGrid").innerHTML=list.map((w)=>{const id=w[0],known=state.known.includes(id);return `<article class="word ${known?"mastered":""}"><div class="word-top"><strong>${w[0]}</strong><span>${w[1]}</span></div><div class="meaning">${w[2]}</div><div class="word-note">${w[3]}</div><button class="known" data-word="${w[0]}">${known?"✓ Đã nhớ · bấm để bỏ":"＋ Đã nhớ"}</button></article>`}).join("")||'<div class="empty">Không tìm thấy từ phù hợp.</div>';
+      document.querySelectorAll("[data-word]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.word;state.known=state.known.includes(id)?state.known.filter(x=>x!==id):[...state.known,id];saveData();renderWords($("#wordSearch").value);renderStats()}));
+    }
+    function renderGrammar(){
+      $("#grammarList").innerHTML=GRAMMAR.map(g=>`<article class="grammar"><div class="grammar-top"><strong>${g[0]}</strong><span>${g[1]}</span></div><p>${g[2]}</p><div class="example">${g[3]}<br><em>${g[4]}</em></div></article>`).join("");
+      $("#expressionList").innerHTML=EXPRESSIONS.map(g=>`<article class="grammar"><div class="grammar-top"><strong>${g[0]}</strong><span>${g[1]}</span></div><p>${g[2]}</p><div class="example">${g[3]}<br><em>${g[4]}</em></div></article>`).join("");
+    }
+    function computeStreak(logs){const today=new Date();today.setHours(0,0,0,0);const todayKey=dateISO(today);let cursor=new Date(today);if(!logs[todayKey])cursor.setDate(cursor.getDate()-1);let count=0;while(logs[dateISO(cursor)]){count++;cursor.setDate(cursor.getDate()-1)}return count;}
+    function renderStats(){const logs=state.logs||{};const values=Object.values(logs);$("#streak").textContent=computeStreak(logs);$("#minutes").textContent=values.reduce((n,x)=>n+(Number(x.minutes)||0),0);$("#knownCount").textContent=`${state.known.length}/${WORDS.length}`;$("#daysCount").textContent=values.length;}
+    function renderHistory(){
+      const logs=state.logs||{},today=new Date();today.setHours(0,0,0,0);const days=[];
+      for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);const key=dateISO(d);days.push({d,key,entry:logs[key]});}
+      $("#weekGrid").innerHTML=days.map(x=>`<div class="day ${x.entry?"done":""} ${x.key===dateISO(today)?"today":""}"><b>${x.d.toLocaleDateString("vi-VN",{weekday:"short"})}</b><i>${x.entry?"✓":"·"}</i><small>${x.d.getDate()}/${x.d.getMonth()+1}</small></div>`).join("");
+      const entries=Object.entries(logs).sort(([a],[b])=>b.localeCompare(a));$("#historyTotal").textContent=entries.length?`${entries.length} ngày đã ghi`:"Chưa có buổi học nào";
+      $("#historyList").innerHTML=entries.slice(0,12).map(([date,x])=>`<div class="history-row"><div class="history-date">${new Date(date+"T12:00:00").toLocaleDateString("vi-VN",{day:"2-digit",month:"2-digit",year:"numeric"})}</div><div class="history-text"><strong>${safe(x.focus||"Buổi học")}</strong><small>${safe(x.note||"Đã hoàn thành buổi học.")}</small></div><span class="history-min">${Number(x.minutes)||0}′</span></div>`).join("")||'<div class="empty">Nhật ký đầu tiên của bạn sẽ hiện ở đây. Bắt đầu một buổi học hôm nay nhé! ✨</div>';
+    }
+    function loadLog(date){const x=(state.logs||{})[date];$("#logMinutes").value=x?.minutes||"";$("#logFocus").value=x?.focus||"Từ vựng";$("#logNote").value=x?.note||"";$("#saveStatus").textContent=x?"Đã có nhật ký ngày này — bạn có thể cập nhật.":"";}
+    const today=new Date(),todayKey=dateISO(today);$("#todayLabel").textContent=today.toLocaleDateString("vi-VN",{weekday:"long",day:"numeric",month:"long"});$("#logDate").value=todayKey;
+    $("#logDate").addEventListener("change",e=>loadLog(e.target.value));$("#wordSearch").addEventListener("input",e=>renderWords(e.target.value));
+    $("#logForm").addEventListener("submit",e=>{e.preventDefault();const date=$("#logDate").value;if(!date)return;state.logs=state.logs||{};state.logs[date]={minutes:Number($("#logMinutes").value),focus:$("#logFocus").value,note:$("#logNote").value.trim()};saveData();renderStats();renderHistory();$("#saveStatus").textContent="Đã lưu trên thiết bị này ✓";});
+    renderWords();renderGrammar();renderStats();renderHistory();loadLog(todayKey);
+  </script>
+</body>
+</html>
+
